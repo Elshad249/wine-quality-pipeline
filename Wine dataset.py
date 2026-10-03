@@ -33,6 +33,17 @@ print(comparison_report.round(4))
 X_train, y_train = train.drop('quality', axis=1), train['quality']
 X_test, y_test = test.drop('quality', axis=1), test['quality']
 
+#keeping a copy
+wine_train = X_train.copy()
+
+#featureengineering
+X_train['sugar_to_alcohol_ratio'] = (X_train['residual sugar']/ X_train['alcohol'])
+X_train['free_to_total_sulfur_ratio'] = X_train['free sulfur dioxide'] / (X_train['total sulfur dioxide'] + 1e-6)
+X_train['acidity_balance_ratio'] = X_train['fixed acidity'] / X_train['volatile acidity']
+
+X_test["sugar_to_alcohol_ratio"] = X_test["residual sugar"] / X_test["alcohol"]
+X_test["free_to_total_sulfur_ratio"] = X_test["free sulfur dioxide"] / (X_test["total sulfur dioxide"] + 1e-6)
+X_test["acidity_balance_ratio"] = X_test["fixed acidity"] / X_test["volatile acidity"]
 
 class DataDriftMonitor():
     def __init__(self, X_train: pd.DataFrame):
@@ -76,21 +87,11 @@ class DataDriftMonitor():
 monitor = DataDriftMonitor(X_train)
 is_drifted, drift_results_df = monitor.check_drift(X_test)
 
-#keeping a copy
-wine_train = X_train.copy()
 #correlationmatrix
 features_with_target = pd.concat([X_train, y_train], axis=1)
 corr_matrix = features_with_target.corr(numeric_only=True)
 print(corr_matrix['quality'].sort_values(ascending=False).drop('quality'))
 
-#featureengineering
-X_train['sugar_to_alcohol_ratio'] = (X_train['residual sugar']/ X_train['alcohol'])
-X_train['free_to_total_sulfur_ratio'] = X_train['free sulfur dioxide'] / (X_train['total sulfur dioxide'] + 1e-6)
-X_train['acidity_balance_ratio'] = X_train['fixed acidity'] / X_train['volatile acidity']
-
-X_test["sugar_to_alcohol_ratio"] = X_test["residual sugar"] / X_test["alcohol"]
-X_test["free_to_total_sulfur_ratio"] = X_test["free sulfur dioxide"] / (X_test["total sulfur dioxide"] + 1e-6)
-X_test["acidity_balance_ratio"] = X_test["fixed acidity"] / X_test["volatile acidity"]
 
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline, make_pipeline
