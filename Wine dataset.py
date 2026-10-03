@@ -54,12 +54,12 @@ class DataDriftMonitor():
 
                 drift_report[feature] = {
                     'baseline_mean' : round(self.baseline_means[feature],3),
-                    'production_mean' : round(prod_means,3),
+                    'production_mean' : round(prod_means[feature],3),
                     'shift_z_score' : round(z_score_shift,2),
                     'drift_detected' : has_drifted
                 }
                 if has_drifted:
-                    print(f'FEATURE ALERT: {feature} drifted by {round(z_score_shift),2} standard deviations!')
+                    print(f'FEATURE ALERT: {feature} drifted by {round(z_score_shift,2)} standard deviations!')
                     drift_detected = True
                 else:
                     print(f'Stable {feature:<25} | Z-shift: {round(z_score_shift, 2)}')
